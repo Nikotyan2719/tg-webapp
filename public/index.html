@@ -19,8 +19,6 @@
   </style>
 </head>
 <body>
-
-<h1 class="app-title">Пример Telegram Web App</h1>
 <div class="status">Загрузка данных...</div>
 
 <button class="show-data-button">Показать данные о пользователе</button>
@@ -121,7 +119,6 @@
   });
 
   function updateTitle(newTitle) {
-    document.querySelector('.app-title').innerText = newTitle;
     tg.MainButton.text = newTitle;
     tg.MainButton.show();
   }
