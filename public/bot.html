@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telegram Bot Interface</title>
+
+  <style>
+    body {
+
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border: 2px solid gray;
+      border-radius: 5px;
+
+    }
+    h1 {
+      text-align: center;
+    }
+    textarea {
+      box-sizing: border-box;
+      width: 100%;
+      height: 100px;
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      resize: none;
+    }
+
+    button {
+      background-color: green;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+    }
+    .message-history {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Интерфейс Telegram Бота</h1>
+
+  <div class="user-info">
+    <h2>Информация о пользователе</h2>
+    <p class="user-details"></p>
+  </div>
+
+  <div class="message-history">
+    <h2>История сообщений</h2>
+    <div class="history"></div>
+  </div>
+
+  <div>
+    <textarea class="message-input" placeholder="Введите ваше сообщение..."></textarea>
+    <button class="send-button">Отправить сообщение</button>
+  </div>
+
+  <div class="response"></div>
+</div>
+
+<script>
+  async function fetchUserInfo() {
+    const userInfoResponse = await fetch('/api/data');
+    const userInfo = await userInfoResponse.json();
+    document.querySelector('.user-details').innerText =
+            `Имя: ${userInfo.userData.first_name} ${userInfo.userData.last_name || ''},
+                Имя пользователя: ${userInfo.userData.username || 'нет'}`;
+    updateMessageHistory(userInfo.messageHistory);
+  }
+
+  async function sendMessage(message) {
+    const response = await fetch('/api/message', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ message })
+    });
+
+    const resText = await response.text();
+    document.querySelector('.response').innerText = resText;
+
+    if (response.ok) {
+      fetchUserInfo();
+    }
+    document.querySelector('.message-input').value = '';
+  }
+
+  function updateMessageHistory(history) {
+    const historyDiv = document.querySelector('.history');
+    historyDiv.innerHTML = '';
+
+    history.forEach(msg => {
+      const msgElement = document.createElement('div');
+      msgElement.textContent = `${msg.sender === 'user' ? 'Вы' : 'Бот'}: ${msg.text}`;
+      historyDiv.appendChild(msgElement);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    await fetchUserInfo();
+
+    document.querySelector('.send-button').addEventListener('click', () => {
+      const message = document.querySelector('.message-input').value;
+      sendMessage(message);
+    });
+
+    setInterval(fetchUserInfo, 2000);
+  });
+</script>
+
+</body>
+</html>
