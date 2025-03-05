@@ -24,6 +24,7 @@
 <div class="status">Загрузка данных...</div>
 
 <button class="show-data-button">Показать данные о пользователе</button>
+<button class="show-chat-bot-id-button">Показать Chat ID и Bot ID</button>
 <button class="toggle-main-button">Показать/Скрыть основную кнопку</button>
 <button class="send-data-button">Отправить данные в Telegram</button>
 <button class="change-color-button">Сменить цвет кнопки</button>
@@ -142,6 +143,23 @@
     tg.MainButton.show();
   }
 
+  document.getElementById('sendMessageButton').addEventListener('click', async () => {
+    const messageInput = document.getElementById('messageInput');
+    const message = messageInput.value;
+    if (message) {
+      const response = await fetch('/api/message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message })
+      });
+      if (response.ok) {
+        tg.showAlert("Сообщение отправлено в Telegram!");
+        messageInput.value = '';
+      } else {
+        tg.showAlert("Ошибка при отправке сообщения.");
+      }
+    }
+  });
 
   updateTitle("Пример Telegram Web App");
 </script>
