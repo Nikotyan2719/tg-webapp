@@ -24,6 +24,7 @@
 <div class="status">Загрузка данных...</div>
 
 <button class="show-data-button">Показать данные о пользователе</button>
+<button class="show-chat-bot-id-button">Показать Chat ID и Bot ID</button>
 <button class="toggle-main-button">Показать/Скрыть основную кнопку</button>
 <button class="send-data-button">Отправить данные в Telegram</button>
 <button class="change-color-button">Сменить цвет кнопки</button>
@@ -38,21 +39,44 @@
   tg.ready();
 
   const userData = tg.initDataUnsafe;
-  document.querySelector('.status').innerText = `Здравствуйте, ${userData.user.first_name}!`;
+
+  if (userData) {
+    document.querySelector('.status').innerText = `Здравствуйте, ${userData.user.first_name}!`;
+  } else {
+    document.querySelector('.status').innerText = "Не удалось загрузить данные пользователя.";
+  }
 
   document.querySelector('.show-data-button').addEventListener('click', () => {
-    const userInfo = `
-            <h3>Информация о пользователе:</h3>
-            <p>ID: ${userData.user.id}</p>
-            <p>Имя: ${userData.user.first_name}</p>
-            <p>Фамилия: ${userData.user.last_name || 'Нет'}</p>
-            <p>Юзернейм: ${userData.user.username || 'Нет'}</p>
-            <p>Язык: ${userData.user.language_code || 'Нет'}</p>
-            <p>Chat ID: ${userData.chat.id || 'Нет'}</p>
-            <p>Bot ID: ${userData.me.id || 'Нет'}</p>
-        `;
-    document.querySelector('.status').innerHTML = userInfo;
-    tg.showAlert("Данные о пользователе отображены!");
+    if (userData) {
+      const userInfo = `
+                <h3>Информация о пользователе:</h3>
+                <p>ID: ${userData.user.id}</p>
+                <p>Имя: ${userData.user.first_name}</p>
+                <p>Фамилия: ${userData.user.last_name || 'Нет'}</p>
+                <p>Юзернейм: ${userData.user.username || 'Нет'}</p>
+                <p>Язык: ${userData.user.language_code || 'Нет'}</p>
+            `;
+      document.querySelector('.status').innerHTML = userInfo;
+      tg.showAlert("Данные о пользователе отображены!");
+    } else {
+      tg.showAlert("Данные пользователя недоступны.");
+    }
+  });
+
+  document.querySelector('.show-chat-bot-id-button').addEventListener('click', () => {
+    if (userData) {
+      const chatId = userData.chat.id ? userData.chat.id : 'Нет';
+      const botId = userData.me.id ? userData.me.id : 'Нет';
+      const chatBotInfo = `
+                <h3>Chat и Bot ID:</h3>
+                <p>Chat ID: ${chatId}</p>
+                <p>Bot ID: ${botId}</p>
+            `;
+      document.querySelector('.status').innerHTML = chatBotInfo;
+      tg.showAlert("Chat ID и Bot ID отображены!");
+    } else {
+      tg.showAlert("Данные недоступны.");
+    }
   });
 
   document.querySelector('.open-qr-button').addEventListener('click', () => {
@@ -98,7 +122,6 @@
   });
 
   document.querySelector('.close-button').addEventListener('click', () => {
-
     tg.close();
   });
 
