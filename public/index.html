@@ -16,13 +16,6 @@
       font-size: 16px;
       margin: 5px;
     }
-    .user-info {
-      margin-top: 20px;
-      border: 1px solid #ccc;
-      padding: 10px;
-      background-color: #f9f9f9;
-      border-radius: 5px;
-    }
   </style>
 </head>
 <body>
@@ -39,8 +32,6 @@
 <button class="open-qr-button">Открыть QR-сканер</button>
 <button class="close-qr-button">Закрыть QR-сканер</button>
 
-<div class="user-info"></div>
-
 <script>
   const tg = window.Telegram.WebApp;
 
@@ -48,12 +39,6 @@
 
   const userData = tg.initDataUnsafe;
   document.querySelector('.status').innerText = `Здравствуйте, ${userData.user.first_name}!`;
-
-  function updateTitle(newTitle) {
-    document.querySelector('.app-title').innerText = newTitle;
-    tg.MainButton.text = newTitle;
-    tg.MainButton.show();
-  }
 
   document.querySelector('.show-data-button').addEventListener('click', () => {
     const userInfo = `
@@ -66,8 +51,8 @@
             <p>Chat ID: ${userData.chat.id}</p>
             <p>Bot ID: ${userData.me.id}</p>
         `;
-
-    document.querySelector('.user-info').innerHTML = userInfo;
+    document.querySelector('.status').innerHTML = userInfo;
+    tg.showAlert("Данные о пользователе отображены!");
   });
 
   document.querySelector('.open-qr-button').addEventListener('click', () => {
@@ -81,10 +66,9 @@
   });
 
   document.querySelector('.close-qr-button').addEventListener('click', () => {
-    tg.closeScanQrPopup(); // Закрываем QR-сканер
+    tg.closeScanQrPopup();
     tg.showAlert("QR-сканер закрыт.");
   });
-
 
   document.querySelector('.toggle-main-button').addEventListener('click', () => {
     if (tg.MainButton.isVisible) {
@@ -105,7 +89,7 @@
 
   document.querySelector('.change-color-button').addEventListener('click', () => {
     if (tg.MainButton.isVisible) {
-      tg.MainButton.color = tg.MainButton.color === '#ff0000' ? '#00ff00' : '#ff0000'; // Смена цвета с красного на зелёный
+      tg.MainButton.color = tg.MainButton.color === '#ff0000' ? '#00ff00' : '#ff0000';
       tg.MainButton.text = "Цвет изменён!";
       tg.showAlert("Цвет кнопки изменён!");
     } else {
@@ -114,10 +98,10 @@
   });
 
   document.querySelector('.close-button').addEventListener('click', () => {
+
     tg.close();
   });
 
-  // Слушатели событий
   tg.onEvent('keyboardWillShow', () => {
     tg.showAlert('Клавиатура появится');
   });
@@ -130,8 +114,13 @@
     tg.showAlert("Основная кнопка нажата!");
   });
 
-  updateTitle("Пример T");
+  function updateTitle(newTitle) {
+    document.querySelector('.app-title').innerText = newTitle;
+    tg.MainButton.text = newTitle;
+    tg.MainButton.show();
+  }
 
+  updateTitle("Пример Telegram Web App");
 </script>
 </body>
 </html>
