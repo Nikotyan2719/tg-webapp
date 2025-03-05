@@ -47,9 +47,7 @@
             <p>Имя: ${userData.user.first_name}</p>
             <p>Фамилия: ${userData.user.last_name || 'Нет'}</p>
             <p>Юзернейм: ${userData.user.username || 'Нет'}</p>
-            <p>Язык: ${userData.user.language_code || 'Нет'}</p>
-            <p>Chat ID: ${userData.chat.id}</p>
-            <p>Bot ID: ${userData.me.id}</p>
+
         `;
     document.querySelector('.status').innerHTML = userInfo;
     tg.showAlert("Данные о пользователе отображены!");
