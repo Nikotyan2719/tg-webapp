@@ -19,12 +19,14 @@ let messageHistory = [];
 bot.onText(/\/start/, (msg) => {
 	const chatId = msg.chat.id;
 	activeChats.add(chatId);
-	userData = {
+
+	userData[chatId] = {
 		id: msg.from.id,
 		first_name: msg.from.first_name,
 		last_name: msg.from.last_name || 'Нет',
 		username: msg.from.username || 'Нет'
 	};
+
 	bot.sendMessage(chatId, 'Добро пожаловать!');
 });
 
@@ -55,7 +57,8 @@ app.post('/api/message', (req, res) => {
 		messageHistory.push({ sender: 'bot', text: message });
 
 		activeChats.forEach(chatId => {
-			bot.sendMessage(chatId, message);
+			console.log(`Отправка сообщения в chatId: ${chatId} с сообщением: ${message}`);
+			bot.sendMessage(chatId, message).catch(console.error);
 		});
 
 		return res.status(200).send('Сообщение отправлено всем активным чатам.');
