@@ -16,6 +16,13 @@
       font-size: 16px;
       margin: 5px;
     }
+    .user-info {
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
@@ -29,6 +36,11 @@
 <button class="change-color-button">Сменить цвет кнопки</button>
 <button class="close-button">Закрыть приложение</button>
 
+<button class="open-qr-button">Открыть QR-сканер</button>
+<button class="close-qr-button">Закрыть QR-сканер</button>
+
+<div class="user-info"></div>
+
 <script>
   const tg = window.Telegram.WebApp;
 
@@ -40,6 +52,7 @@
   function updateTitle(newTitle) {
     document.querySelector('.app-title').innerText = newTitle;
     tg.MainButton.text = newTitle;
+    tg.MainButton.show();
   }
 
   document.querySelector('.show-data-button').addEventListener('click', () => {
@@ -53,10 +66,25 @@
             <p>Chat ID: ${userData.chat.id}</p>
             <p>Bot ID: ${userData.me.id}</p>
         `;
-    const infoDiv = document.createElement('div');
-    infoDiv.innerHTML = userInfo;
-    document.body.appendChild(infoDiv);
+
+    document.querySelector('.user-info').innerHTML = userInfo;
   });
+
+  document.querySelector('.open-qr-button').addEventListener('click', () => {
+    tg.showScanQrPopup({ text: "Сканируйте QR-код" }, (result) => {
+      if (result) {
+        tg.showAlert(`Результат сканирования: ${result}`);
+      } else {
+        tg.showAlert("Сканирование отменено.");
+      }
+    });
+  });
+
+  document.querySelector('.close-qr-button').addEventListener('click', () => {
+    tg.closeScanQrPopup(); // Закрываем QR-сканер
+    tg.showAlert("QR-сканер закрыт.");
+  });
+
 
   document.querySelector('.toggle-main-button').addEventListener('click', () => {
     if (tg.MainButton.isVisible) {
@@ -85,11 +113,11 @@
     }
   });
 
-
   document.querySelector('.close-button').addEventListener('click', () => {
     tg.close();
   });
 
+  // Слушатели событий
   tg.onEvent('keyboardWillShow', () => {
     tg.showAlert('Клавиатура появится');
   });
@@ -102,7 +130,7 @@
     tg.showAlert("Основная кнопка нажата!");
   });
 
-  updateTitle("Новое название приложения");
+  updateTitle("Пример T");
 
 </script>
 </body>
