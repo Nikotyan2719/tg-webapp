@@ -10,7 +10,7 @@
       text-align: center;
       padding: 20px;
     }
-    #status {
+    .status {
       margin: 20px;
       font-size: 20px;
     }
@@ -25,9 +25,11 @@
 <body>
 
 <h1>Telegram Web App</h1>
-<div id="status">Загрузка...</div>
-<button id="showDataButton">Показать данные о пользователе</button>
-<button id="closeButton">Закрыть</button>
+<div class="status">Загрузка...</div>
+<button class="showDataButton">Показать данные о пользователе</button>
+<button class="changeColorButton">Поменять цвет</button>
+<button class="sendDataButton">Отправить данные в Telegram</button>
+<button class="closeButton">Закрыть</button>
 
 <script>
   const tg = window.Telegram.WebApp;
@@ -36,26 +38,40 @@
 
   const userData = tg.initDataUnsafe;
   if (userData && userData.user) {
-    document.getElementById('status').innerText = `Здравствуйте, ${userData.user.first_name}!`;
+    document.querySelector('.status').innerText = `Здравствуйте, ${userData.user.first_name}!`;
   } else {
-    document.getElementById('status').innerText = "Не удалось получить данные о пользователе.";
+    document.querySelector('.status').innerText = "Не удалось получить данные о пользователе.";
   }
 
-  // Показать данные пользователю
-  document.getElementById('showDataButton').addEventListener('click', () => {
+  document.querySelector('.showDataButton').addEventListener('click', () => {
     const userInfo = `
-                <h3>Информация о пользователе:</h3>
-                <p>ID: ${userData.user.id}</p>
-                <p>Имя: ${userData.user.first_name}</p>
-                <p>Фамилия: ${userData.user.last_name || 'Нет'}</p>
-                <p>Юзернейм: ${userData.user.username || 'Нет'}</p>
-            `;
+      <h3>Информация о пользователе:</h3>
+      <p>ID: ${userData.user.id}</p>
+      <p>Имя: ${userData.user.first_name}</p>
+      <p>Фамилия: ${userData.user.last_name || 'Нет'}</p>
+      <p>Юзернейм: ${userData.user.username || 'Нет'}</p>
+      <p>Язык: ${userData.user.language_code || 'Нет'}</p>
+    `;
     const userInfoDiv = document.createElement('div');
     userInfoDiv.innerHTML = userInfo;
     document.body.appendChild(userInfoDiv);
   });
 
-  document.getElementById('closeButton').addEventListener('click', () => {
+  document.querySelector('.changeColorButton').addEventListener('click', () => {
+    document.body.style.backgroundColor = tg.colorScheme === 'dark' ? '#333' : '#f0f0f0';
+    document.querySelector('.status').innerText = `Цвет фона изменен на ${tg.colorScheme === 'dark' ? 'темный' : 'светлый'}`;
+  });
+
+  document.querySelector('.sendDataButton').addEventListener('click', () => {
+    const data = {
+      message: "Привет из вашего веб-приложения!",
+      userId: userData.user.id,
+    };
+    tg.sendData(JSON.stringify(data));
+    alert("Данные отправлены в Telegram");
+  });
+
+  document.querySelector('.closeButton').addEventListener('click', () => {
     tg.close();
   });
 </script>
