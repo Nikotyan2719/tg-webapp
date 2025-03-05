@@ -19,6 +19,10 @@
   </style>
 </head>
 <body>
+
+<h1 class="app-title">Пример Telegram Web App</h1>
+<div class="status">Загрузка данных...</div>
+
 <button class="show-data-button">Показать данные о пользователе</button>
 <button class="toggle-main-button">Показать/Скрыть основную кнопку</button>
 <button class="send-data-button">Отправить данные в Telegram</button>
@@ -55,6 +59,22 @@
       tg.showAlert("Данные о пользователе отображены!");
     } else {
       tg.showAlert("Данные пользователя недоступны.");
+    }
+  });
+
+  document.querySelector('.show-chat-bot-id-button').addEventListener('click', () => {
+    if (userData) {
+      const chatId = userData.chat && userData.chat.id ? userData.chat.id : 'Недоступен';
+      const botId = userData.me && userData.me.id ? userData.me.id : 'Недоступен';
+      const chatBotInfo = `
+                <h3>Chat и Bot ID:</h3>
+                <p>Chat ID: ${chatId}</p>
+                <p>Bot ID: ${botId}</p>
+            `;
+      document.querySelector('.status').innerHTML = chatBotInfo;
+      tg.showAlert("Chat ID и Bot ID отображены!");
+    } else {
+      tg.showAlert("Данные недоступны.");
     }
   });
 
