@@ -12,12 +12,13 @@ app.use(express.static('public'));
 const token = '7802207571:AAEtyYS0xqzXn6K8GoYzas77qJPg5RF4Zlc';
 const bot = new TelegramBot(token, { polling: true });
 
-let chatId = null;
+let activeChats = new Set();
 let userData = {};
 let messageHistory = [];
 
 bot.onText(/\/start/, (msg) => {
-	chatId = msg.chat.id;
+	const chatId = msg.chat.id;
+	activeChats.add(chatId);
 	userData = {
 		id: msg.from.id,
 		first_name: msg.from.first_name,
@@ -28,7 +29,8 @@ bot.onText(/\/start/, (msg) => {
 });
 
 bot.on('message', (msg) => {
-	if (msg.chat.id === chatId && msg.text) {
+	const chatId = msg.chat.id;
+	if (msg.text) {
 		messageHistory.push({ sender: 'user', text: msg.text });
 		bot.sendMessage(chatId, "Ваше сообщение получено!");
 	}
@@ -49,12 +51,16 @@ app.get('/api/data', (req, res) => {
 
 app.post('/api/message', (req, res) => {
 	const { message } = req.body;
-	if (message && chatId) {
+	if (message) {
 		messageHistory.push({ sender: 'bot', text: message });
-		bot.sendMessage(chatId, message);
-		return res.status(200).send('Сообщение отправлено в Telegram.');
+
+		activeChats.forEach(chatId => {
+			bot.sendMessage(chatId, message);
+		});
+
+		return res.status(200).send('Сообщение отправлено всем активным чатам.');
 	}
-	res.status(400).send('Сообщение отсутствует или Chat ID недоступен.');
+	res.status(400).send('Сообщение отсутствует.');
 });
 
 app.listen(PORT, () => {
