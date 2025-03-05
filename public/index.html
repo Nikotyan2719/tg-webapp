@@ -3,44 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Telegram Web App Example</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
       text-align: center;
+      padding: 20px;
+    }
+    #status {
+      margin: 20px;
+      font-size: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin: 5px;
     }
   </style>
+  <title>Telegram Web App</title>
 </head>
 <body>
-<h1>Данные пользователя</h1>
-<div id="user-data">Данные не отправлены.</div>
+
+<h1>Telegram Web App</h1>
+<div id="status">Загрузка...</div>
+<button id="showDataButton">Показать данные о пользователе</button>
+<button id="closeButton">Закрыть</button>
 
 <script>
-  async function fetchData() {
-    const response = await fetch('/api/data');
-    const userData = await response.json();
+  const tg = window.Telegram.WebApp;
 
-    const userDataDiv = document.getElementById('user-data');
+  tg.ready();
 
-    if (userData.id) {
-      userDataDiv.innerHTML = `
-                    <p>ID: ${userData.id}</p>
-                    <p>Имя: ${userData.first_name}</p>
-                    <p>Фамилия: ${userData.last_name}</p>
-                    <p>Юзернейм: ${userData.username}</p>
-                `;
-    } else {
-      userDataDiv.innerHTML = 'Данные не отправлены.';
-    }
+  const userData = tg.initDataUnsafe;
+  if (userData && userData.user) {
+    document.getElementById('status').innerText = `Здравствуйте, ${userData.user.first_name}!`;
+  } else {
+    document.getElementById('status').innerText = "Не удалось получить данные о пользователе.";
   }
 
-  // Обновляем данные каждые 2 секунды
-  setInterval(fetchData, 2000);
+  // Показать данные пользователю
+  document.getElementById('showDataButton').addEventListener('click', () => {
+    const userInfo = `
+                <h3>Информация о пользователе:</h3>
+                <p>ID: ${userData.user.id}</p>
+                <p>Имя: ${userData.user.first_name}</p>
+                <p>Фамилия: ${userData.user.last_name || 'Нет'}</p>
+                <p>Юзернейм: ${userData.user.username || 'Нет'}</p>
+            `;
+    const userInfoDiv = document.createElement('div');
+    userInfoDiv.innerHTML = userInfo;
+    document.body.appendChild(userInfoDiv);
+  });
+
+  document.getElementById('closeButton').addEventListener('click', () => {
+    tg.close();
+  });
 </script>
 </body>
 </html>
