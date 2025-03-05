@@ -65,8 +65,8 @@
 
   document.querySelector('.show-chat-bot-id-button').addEventListener('click', () => {
     if (userData) {
-      const chatId = userData.chat.id ? userData.chat.id : 'Нет';
-      const botId = userData.me.id ? userData.me.id : 'Нет';
+      const chatId = userData.chat && userData.chat.id ? userData.chat.id : 'Недоступен';
+      const botId = userData.me && userData.me.id ? userData.me.id : 'Недоступен';
       const chatBotInfo = `
                 <h3>Chat и Bot ID:</h3>
                 <p>Chat ID: ${chatId}</p>
